@@ -29,6 +29,7 @@ class SuperJobAPI(BaseHeadHunter):
         self.vacations_list = requests.get(SuperJobAPI.URL, headers=self.header, params=self.params)
         return self.vacations_list.json()['objects']
 
+
     def get_vacancy_info(self, vacancies):
         result_list = []
         for vacancy in vacancies:
@@ -50,7 +51,6 @@ class SuperJobAPI(BaseHeadHunter):
                 result_list.append({'name': name, 'id': vacancy_id, 'salary': f'Зарплата не указана', 'location': vacancy_location, 'experience': experience, 'link': vacancy_link})
             else:
                 result_list.append({'name': name, 'id': vacancy_id, 'salary': f'Зарплата по договоренности', 'location': vacancy_location, 'experience': experience, 'link': vacancy_link})
-        # currency = vacancy['currency']
         return result_list
 
 
