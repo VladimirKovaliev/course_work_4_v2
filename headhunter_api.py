@@ -19,10 +19,12 @@ class BaseHeadHunter(ABC):
 class HeadHunter_API(BaseHeadHunter):
     URL = 'https://api.hh.ru/vacancies'
 
-    def __init__(self, text, area):
+    def __init__(self, text, area, name=None):
+        self.name = name
         self.__text = text
         self.__area = area
         self.params = {'text': self.__text,
+                       'name': name,
                        'per_page': 100,
                        'area': self.__area}
         self.header = {'User-Agent': 'User'}
@@ -78,8 +80,8 @@ class HeadHunter_API(BaseHeadHunter):
 
 
 
-hh = HeadHunter_API('Python', 3)
-data = hh.get_vacancies()
-sorted_vacancies = hh.get_vacancy_info(data)
-for vacancy in sorted_vacancies:
-    print(f"{vacancy['name']}: {vacancy['salary']} ({vacancy['area']}), URL:{vacancy['url']}")
+# hh = HeadHunter_API('разработчик', 1, "python")
+# data = hh.get_vacancies()
+# sorted_vacancies = hh.get_vacancy_info(data)
+# for vacancy in sorted_vacancies:
+#     print(f"{vacancy['name']}: {vacancy['salary']} ({vacancy['area']}), URL:{vacancy['url']}")
