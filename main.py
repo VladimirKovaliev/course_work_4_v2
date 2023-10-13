@@ -5,6 +5,7 @@ from save_to_json import Save_to_json
 from utils import filter_by_salary, print_vacancies, get_top_vacancies
 import time
 
+
 def interacion_with_user():
     while True:
 
@@ -14,34 +15,38 @@ def interacion_with_user():
                              '3 - оба варианта\n'
                              '4 - завершить работу\n')
         if set_platform == '4':
-            return ('Завершаю работу')
+            return 'Завершаю работу'
         elif set_platform not in ['1', '2', '3', '4']:
-            return('Неизвестный ввод, завершаю работу')
+            return 'Неизвестный ввод, завершаю работу'
         vacancy = input(f'Какую вакансию вы хотите найти? ')
-        user_choise = input('Добавить фильтр для поиска?\n'
+        user_choice = input('Добавить фильтр для поиска?\n'
                             '1 - да \n'
                             '2 - нет \n')
-        if user_choise == '1':
+        if user_choice == '1':
             user_filter = input('По какому фильтру подбирать вакансии? ')
         print('Идет поиск, подождите', end=' ')
         for _ in range(3):
-            time.sleep(1)
+            time.sleep(0.2)
             print('.', end='', flush=True)
         print()
-
 
         if set_platform == '1':
             '''Поиск вакансий на HH'''
 
-            if user_choise == '1':
+            if user_choice == '1':
                 hh = HeadHunter_API(vacancy, 1, user_filter)
             else:
                 hh = HeadHunter_API(vacancy, 1)
 
             data = hh.get_vacancies()
             sorted_vacancies = hh.get_vacancy_info(data)
+            # json_func = Save_to_json()
+            # json_func.add_vacancy(sorted_vacancies)
+            # json_func.save_to_file()
             for vacancy in sorted_vacancies:
-                print(f"{vacancy['name']}: {vacancy['salary']} ({vacancy['area']}), URL:{vacancy['url']}")
+                print(
+                    f"ID:{vacancy['id']} {vacancy['name']}: {vacancy['salary']} "
+                    f"({vacancy['location']}), URL:{vacancy['link']}")
 
         elif set_platform == '2':
             '''Поиск вакансий на SJ'''
@@ -57,7 +62,10 @@ def interacion_with_user():
                       f'URL: {vacancy["link"]}')
 
         elif set_platform == '3':
-            hh = HeadHunter_API(vacancy, 1, user_filter)
+            if user_choice == '1':
+                hh = HeadHunter_API(vacancy, 1, user_filter)
+            else:
+                hh = HeadHunter_API(vacancy, 1)
             sj = SuperJobAPI(vacancy)
             hh_data = hh.get_vacancies()
             sj_data = sj.get_vacancies()
@@ -65,51 +73,65 @@ def interacion_with_user():
             sj_sorted_vacancies = sj.get_vacancy_info(sj_data)
             print('Вакансии из HH:')
             for vacancy in hh_sorted_vacancies:
-                print(f"{vacancy['name']}: {vacancy['salary']} ({vacancy['area']}), URL:{vacancy['url']}")
+                print(
+                    f"ID: {vacancy['id']},"
+                    f" {vacancy['name']},"
+                    f" {vacancy['salary']}"
+                    f" ({vacancy['location']}), URL:{vacancy['link']}")
             print('Вакансии из SuperJob')
             for vacancy in sj_sorted_vacancies:
-                print(f'{vacancy["name"]},'
+                print(f'ID: {vacancy["id"]},'
+                      f' {vacancy["name"]}:,'
                       f' {vacancy["salary"]},'
-                      f' ID вакансии : {vacancy["id"]},'
                       f' ({vacancy["location"]})'
                       f' Опыт работы: {vacancy["experience"]}'
                       f' URL: {vacancy["link"]}')
 
         elif set_platform == '4':
-            return ('Завершаю работу')
+            return 'Завершаю работу'
 
         else:
-            return('Неизвестный ввод')
+            return 'Неизвестный ввод'
         while True:
-            user_choise = input('Сохранить результат в JSON файл?\n'
+            user_choice = input('Сохранить результат в JSON файл?\n'
                                 '1 - да\n'
                                 '2 - нет\n'
                                 '3 - Зачем это нужно?\n'
                                 '4 - Завершить работу\n')
-            if user_choise == '1':
-                json = Save_to_json()
-                json.add_vacancy(sorted_vacancies)
-                json.save_to_file()
-                print('Данные сохранены.')
+            if user_choice == '1':
+                try:
+                    json_func = Save_to_json()
+                    json_func.add_vacancy(sorted_vacancies)
+                    json_func.save_to_file()
+                    print('Данные сохранены.')
+                    break
+                except UnboundLocalError:
+                    json_func = Save_to_json()
+                    json_func.add_vacancy(hh_sorted_vacancies)
+                    json_func.add_vacancy(sj_sorted_vacancies)
+                    json_func.save_to_file()
+                    print('Данные с платформ SJ и HH сохранены')
+                    break
+            elif user_choice == '2':
                 break
-            elif user_choise == '2':
-                break
-            elif user_choise == '3':
+            elif user_choice == '3':
                 print('Это нужно для того, чтобы вы потом могли вывести, добавить, удалить или отсортировать вакансии')
                 print()
-            elif user_choise == '4':
+            elif user_choice == '4':
                 break
             else:
                 print('Неверный выбор. Попробуйте снова.')
-        user_choise = input('Продолжить работу?\n'
+        user_choice = input('Продолжить работу?\n'
                             '1 - Да\n'
                             '2 - Завершить работу\n')
-        if user_choise == '1':
+        if user_choice == '1':
             continue
         return 'Завершаю работу'
+
+
 def user_interaction_with_json():
     while True:
-        user_choise = input('Что вы хотите сделать?\n'
+        user_choice = input('Что вы хотите сделать?\n'
                             '1 - Вывести содержимое JSON файла\n'
                             '2 - Отсортировать вакансии в JSON файле по зарплате\n'
                             '3 - Вывести топ N вакансий\n'
@@ -119,30 +141,31 @@ def user_interaction_with_json():
             data = file.read()
             parsed_data = json.loads(data)
 
-        if user_choise == '1':
+        if user_choice == '1':
             print('Вывожу содержимое', end=' ')
             for _ in range(3):
                 time.sleep(0.3)
                 print('.', end='', flush=True)
             print()
-            # with open('result.json', 'r') as file:
-            #     data = file.read()
-            #     parsed_data = json.loads(data)
             print_vacancies(parsed_data)
-        if user_choise == '2':
+
+        if user_choice == '2':
             min_salary = int(input('Введите минимальную зарплату: '))
             sorted_vacancies = filter_by_salary('result.json', min_salary)
             print_vacancies(sorted_vacancies)
-        if user_choise == '3':
+
+        if user_choice == '3':
             vacancies_count = int(input('Сколько вакансий вы хотите вывести? '))
             top_vacancies = get_top_vacancies('result.json', vacancies_count)
             print_vacancies(top_vacancies)
-        if user_choise == '4':
-            pass
 
-            # Дальше идет сортировка, вывод топ вакансий, сохранение в JSON, поиск по ключевым словам, сортировка по зп
+        if user_choice == '4':
+            vacancy_id = int(input('Введите ID вакансии, которую хотите удалить '))
+            saver = Save_to_json()
+            saver.delete_vacancy(vacancy_id)
 
-
+        if user_choice == '5':
+            return 'Завершаю работу'
 
 
 greetings = input(f'Приветствую! Чем займемся? \n'
@@ -154,10 +177,3 @@ if greetings == '1':
 elif greetings == '2':
     go = user_interaction_with_json()
     print(go)
-
-
-# with open('result.json', 'r') as file:
-#     data = file.read()
-#     parsed_data = json.loads(data)
-#     for job in parsed_data:
-#         print(job['name'], job['salary'], job['location'], job['experience'], job['link'])
