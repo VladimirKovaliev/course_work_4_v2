@@ -53,5 +53,19 @@ class Save_to_json(AbstractSaveToJSON, MixinSave):
                     print('*' * 100)
                     print(instance, sep='\n')
 
-    def delete_vacancy(self, vacancy):
-        pass
+    def delete_vacancy(self, vacancy_id: int) -> None:
+        """ Функция для удаления ваканский из списка по id """
+        try:
+            with open(Save_to_json.PATH, 'r') as file:
+                saved_vacation_list = json.loads(file.read())
+        except FileNotFoundError:
+            raise FileNotFoundError("нет файла JSONSaver.PATH = 'result.json'")
+        for vacation in saved_vacation_list:
+            if int(vacation['id']) == int(vacancy_id):
+                del saved_vacation_list[saved_vacation_list.index(vacation)]
+                print('Вакансия удалена')
+                break
+        else:
+            print('Нет вакансии с таким id')
+        with open(Save_to_json.PATH, 'w') as file:
+            json.dump(saved_vacation_list, fp=file)
