@@ -20,6 +20,7 @@ class MixinSave:
         with open(Save_to_json.PATH, 'w') as file:
             json.dump(Save_to_json.list_to_save, fp=file)
 
+
 class Save_to_json(AbstractSaveToJSON, MixinSave):
     """Класс для работы с вакансиями с jSOB"""
     PATH = 'result.json'
@@ -54,7 +55,7 @@ class Save_to_json(AbstractSaveToJSON, MixinSave):
                     print(instance, sep='\n')
 
     def delete_vacancy(self, vacancy_id: int) -> None:
-        """ Функция для удаления ваканский из списка по id """
+        """ Функция для удаления вакансий из списка по id """
         try:
             with open(Save_to_json.PATH, 'r') as file:
                 saved_vacation_list = json.loads(file.read())

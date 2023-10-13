@@ -36,6 +36,7 @@ class HeadHunter_API(BaseHeadHunter):
     def set_text(self, text):
         self.__text = text
         self.params['text'] = self.__text
+
     def set_area(self, area):
         self.__area = area
         self.params['area'] = self.__area
@@ -57,9 +58,8 @@ class HeadHunter_API(BaseHeadHunter):
     def get_vacancy_url(self, vacancy_id):
         return f'https://hh.ru/vacancy/{vacancy_id}'
 
-
     def get_vacancy_info(self, vacancies):
-        '''Получает название вакансии, информацию о зарплате и местоположении'''
+        """Получает название вакансии, информацию о зарплате и местоположении"""
         result_list = []
         for vacancy in vacancies:
             name = vacancy['name']
@@ -67,21 +67,21 @@ class HeadHunter_API(BaseHeadHunter):
             area = HeadHunter_API.get_city_name(vacancy['area']['id'])
             url = self.get_vacancy_url(vacancy['id'])
             if not salary:
-                result_list.append({'name': name, 'salary': 'Зарплата не указана', 'area': area, 'url': url})
+                result_list.append(
+                    {'name': name, 'link': url, 'salary': 'Зарплата не указана', 'location': area, 'id': url[-8:]})
             elif salary.get('from'):
-                result_list.append({'name': name, 'salary': f"Зарплата от {salary['from']} {salary['currency']}", 'area': area, 'url': url})
+                result_list.append(
+                    {'name': name, 'salary': f"Зарплата от {salary['from']} {salary['currency']}", 'location': area,
+                     'link': url, 'id': url[-8:]})
             elif salary.get('to'):
-                result_list.append({'name': name, 'salary': f"Зарплата до {salary['to']} {salary['currency']}", 'area': area, 'url': url})
+                result_list.append(
+                    {'name': name, 'salary': f"Зарплата до {salary['to']} {salary['currency']}", 'location': area,
+                     'link': url, 'id': url[-8:]})
             elif salary.get('currency'):
-                result_list.append({'name': name, 'salary': f"Зарплата по договорённости в {salary['currency']}", 'area': area, 'url': url})
+                result_list.append(
+                    {'name': name, 'salary': f"Зарплата по договорённости в {salary['currency']}", 'location': area,
+                     'link': url, 'id': url[-8:]})
             else:
-                result_list.append({'name': name, 'salary': 'Зарплата не указана', 'area': area, 'url': url})
+                result_list.append(
+                    {'name': name, 'salary': 'Зарплата не указана', 'location': area, 'link': url, 'id': url[-8:]})
         return result_list
-
-
-
-# hh = HeadHunter_API('разработчик', 1, "python")
-# data = hh.get_vacancies()
-# sorted_vacancies = hh.get_vacancy_info(data)
-# for vacancy in sorted_vacancies:
-#     print(f"{vacancy['name']}: {vacancy['salary']} ({vacancy['area']}), URL:{vacancy['url']}")
