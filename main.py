@@ -2,6 +2,7 @@ import json
 from headhunter_api import HeadHunter_API
 from superjob_api import SuperJobAPI
 from save_to_json import Save_to_json
+from utils import filter_by_salary, print_vacancies, get_top_vacancies
 import time
 
 def interacion_with_user():
@@ -48,7 +49,12 @@ def interacion_with_user():
             data = sj.get_vacancies()
             sorted_vacancies = sj.get_vacancy_info(data)
             for vacancy in sorted_vacancies:
-                print(f'{vacancy["name"]}, {vacancy["salary"]}, ID вакансии : {vacancy["id"]}, ({vacancy["location"]}) Опыт работы: {vacancy["experience"]} URL: {vacancy["link"]}')
+                print(f'{vacancy["name"]}, '
+                      f'{vacancy["salary"]},'
+                      f' ID вакансии : {vacancy["id"]}, '
+                      f'({vacancy["location"]}) '
+                      f'Опыт работы: {vacancy["experience"]} '
+                      f'URL: {vacancy["link"]}')
 
         elif set_platform == '3':
             hh = HeadHunter_API(vacancy, 1, user_filter)
@@ -62,7 +68,12 @@ def interacion_with_user():
                 print(f"{vacancy['name']}: {vacancy['salary']} ({vacancy['area']}), URL:{vacancy['url']}")
             print('Вакансии из SuperJob')
             for vacancy in sj_sorted_vacancies:
-                print(f'{vacancy["name"]}, {vacancy["salary"]}, ID вакансии : {vacancy["id"]}, ({vacancy["location"]}) Опыт работы: {vacancy["experience"]} URL: {vacancy["link"]}')
+                print(f'{vacancy["name"]},'
+                      f' {vacancy["salary"]},'
+                      f' ID вакансии : {vacancy["id"]},'
+                      f' ({vacancy["location"]})'
+                      f' Опыт работы: {vacancy["experience"]}'
+                      f' URL: {vacancy["link"]}')
 
         elif set_platform == '4':
             return ('Завершаю работу')
@@ -102,20 +113,33 @@ def user_interaction_with_json():
                             '1 - Вывести содержимое JSON файла\n'
                             '2 - Отсортировать вакансии в JSON файле по зарплате\n'
                             '3 - Вывести топ N вакансий\n'
-                            '4 - Завершить работу\n')
+                            '4 - Удалить вакансию по ID\n'
+                            '5 - Завершить работу\n')
+        with open('result.json', 'r') as file:
+            data = file.read()
+            parsed_data = json.loads(data)
+
         if user_choise == '1':
             print('Вывожу содержимое', end=' ')
             for _ in range(3):
                 time.sleep(0.3)
                 print('.', end='', flush=True)
             print()
-            with open('result.json', 'r') as file:
-                data = file.read()
-                parsed_data = json.loads(data)
-                for job in parsed_data:
-                    print(job['name'], job['salary'], job.get('location', 'Локация не указана'), job.get('experience', 'Опыт не нужен'), job.get('link', 'Ссылка отсутствует'))
+            # with open('result.json', 'r') as file:
+            #     data = file.read()
+            #     parsed_data = json.loads(data)
+            print_vacancies(parsed_data)
         if user_choise == '2':
+            min_salary = int(input('Введите минимальную зарплату: '))
+            sorted_vacancies = filter_by_salary('result.json', min_salary)
+            print_vacancies(sorted_vacancies)
+        if user_choise == '3':
+            vacancies_count = int(input('Сколько вакансий вы хотите вывести? '))
+            top_vacancies = get_top_vacancies('result.json', vacancies_count)
+            print_vacancies(top_vacancies)
+        if user_choise == '4':
             pass
+
             # Дальше идет сортировка, вывод топ вакансий, сохранение в JSON, поиск по ключевым словам, сортировка по зп
 
 
