@@ -17,10 +17,12 @@ class BaseHeadHunter(ABC):
 
 
 def get_vacancy_url(vacancy_id):
+    """Возвращает ссылку на вакансию"""
     return f'https://hh.ru/vacancy/{vacancy_id}'
 
 
 class HeadHunter_API(BaseHeadHunter):
+    """Класс для работы с API HeadHunter"""
     URL = 'https://api.hh.ru/vacancies'
 
     def __init__(self, text, area, name=None):
@@ -38,19 +40,23 @@ class HeadHunter_API(BaseHeadHunter):
             raise Exception('HeadHunterAPI problem')
 
     def set_text(self, text):
+        """Устанавливает text в params"""
         self.__text = text
         self.params['text'] = self.__text
 
     def set_area(self, area):
+        """Устанавливает area в params"""
         self.__area = area
         self.params['area'] = self.__area
 
     def get_vacancies(self):
+        """Функция возвращает вакансии с платформы"""
         self.vacations_list = requests.get(HeadHunter_API.URL, params=self.params, headers=self.header)
         return self.vacations_list.json()['items']
 
     @staticmethod
     def get_city_name(city_id):
+        """Функция возвращает название города, в котором находится вакансия"""
         url = f"https://api.hh.ru/areas/{city_id}"
         response = requests.get(url)
         if response.ok:
