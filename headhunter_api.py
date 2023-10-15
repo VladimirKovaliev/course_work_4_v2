@@ -16,6 +16,10 @@ class BaseHeadHunter(ABC):
         pass
 
 
+def get_vacancy_url(vacancy_id):
+    return f'https://hh.ru/vacancy/{vacancy_id}'
+
+
 class HeadHunter_API(BaseHeadHunter):
     URL = 'https://api.hh.ru/vacancies'
 
@@ -55,9 +59,6 @@ class HeadHunter_API(BaseHeadHunter):
         else:
             return "Неизвестная локация"
 
-    def get_vacancy_url(self, vacancy_id):
-        return f'https://hh.ru/vacancy/{vacancy_id}'
-
     def get_vacancy_info(self, vacancies):
         """Получает название вакансии, информацию о зарплате и местоположении"""
         result_list = []
@@ -65,18 +66,18 @@ class HeadHunter_API(BaseHeadHunter):
             name = vacancy['name']
             salary = vacancy['salary']
             area = HeadHunter_API.get_city_name(vacancy['area']['id'])
-            url = self.get_vacancy_url(vacancy['id'])
+            url = get_vacancy_url(vacancy['id'])
             if not salary:
                 result_list.append(
                     {'name': name, 'link': url, 'salary': 'Зарплата не указана', 'location': area, 'id': url[-8:]})
             elif salary.get('from'):
                 result_list.append(
-                    {'name': name, 'salary': f"Зарплата от {salary['from']} {salary['currency']}", 'location': area,
-                     'link': url, 'id': url[-8:]})
+                    {'name': name, 'salary': f"Зарплата от {salary['from']} {salary['currency']}", 'location':
+                        area, 'link': url, 'id': url[-8:]})
             elif salary.get('to'):
                 result_list.append(
-                    {'name': name, 'salary': f"Зарплата до {salary['to']} {salary['currency']}", 'location': area,
-                     'link': url, 'id': url[-8:]})
+                    {'name': name, 'salary': f"Зарплата до {salary['to']} {salary['currency']}", 'location':
+                        area, 'link': url, 'id': url[-8:]})
             elif salary.get('currency'):
                 result_list.append(
                     {'name': name, 'salary': f"Зарплата по договорённости в {salary['currency']}", 'location': area,

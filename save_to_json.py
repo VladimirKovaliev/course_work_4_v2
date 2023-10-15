@@ -21,6 +21,22 @@ class MixinSave:
             json.dump(Save_to_json.list_to_save, fp=file)
 
 
+def get_vacancies_by_salary(salary: int) -> None:
+    """Функция для просмотра сохраненных вакансий из JSON файла"""
+    salary = salary if salary else 0
+    try:
+        with open(Save_to_json.PATH, 'r') as file:
+            saved_vacations = json.loads(file.read())
+    except FileNotFoundError:
+        raise FileNotFoundError('Файла result.json не существует')
+
+    for vacation in saved_vacations:
+        for instance in Save_to_json.instance_list:
+            if vacation['id'] == instance.id and instance.payment > int(salary):
+                print('*' * 100)
+                print(instance, sep='\n')
+
+
 class Save_to_json(AbstractSaveToJSON, MixinSave):
     """Класс для работы с вакансиями с jSOB"""
     PATH = 'result.json'
@@ -38,21 +54,6 @@ class Save_to_json(AbstractSaveToJSON, MixinSave):
                     saved_vacations = json.loads(file.read())
                     Save_to_json.list_to_save += saved_vacations
         Save_to_json.list_to_save += vacancies  # добавление списка вакансий
-
-    def get_vacancies_by_salary(self, salary: int) -> None:
-        """Функция для просмотра сохраненных вакансий из JSON файла"""
-        salary = salary if salary else 0
-        try:
-            with open(Save_to_json.PATH, 'r') as file:
-                saved_vacations = json.loads(file.read())
-        except FileNotFoundError:
-            raise FileNotFoundError('Файла result.json не существует')
-
-        for vacation in saved_vacations:
-            for instance in Save_to_json.instance_list:
-                if vacation['id'] == instance.id and instance.payment > int(salary):
-                    print('*' * 100)
-                    print(instance, sep='\n')
 
     def delete_vacancy(self, vacancy_id: int) -> None:
         """ Функция для удаления вакансий из списка по id """
