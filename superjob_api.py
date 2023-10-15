@@ -8,6 +8,7 @@ class BaseHeadHunter(ABC):
 
 
 def get_vacancy_info(vacancies):
+    """Функция для сбора информации о вакансии"""
     result_list = []
     for vacancy in vacancies:
         name = vacancy['profession']
@@ -61,5 +62,6 @@ class SuperJobAPI(BaseHeadHunter):
         return self.__text
 
     def get_vacancies(self):
+        """Функция, которая берет вакансии с платформы"""
         self.vacations_list = requests.get(SuperJobAPI.URL, headers=self.header, params=self.params)
         return self.vacations_list.json()['objects']

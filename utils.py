@@ -7,6 +7,7 @@ import time
 
 
 def filter_by_salary(json_file, min_salary):
+    """Функция для сортировки вакансий"""
     with open(json_file) as f:
         data = json.load(f)
     filtered_data = []
@@ -29,6 +30,7 @@ def filter_by_salary(json_file, min_salary):
 
 
 def get_top_vacancies(json_file, vacancies_count):
+    """Функция для вывода N количества вакансий"""
     with open(json_file) as f:
         data = json.load(f)
     sort_vacancies = []
@@ -49,6 +51,7 @@ def get_top_vacancies(json_file, vacancies_count):
 
 
 def print_vacancies(vacancies):
+    """Функция для вывода вакансий"""
     for job in vacancies:
         print(f" ID: {job.get('id', 'ID вакансии не указанно')},"
               f" {job.get('name', 'Название вакансии не указано')},"
@@ -59,6 +62,7 @@ def print_vacancies(vacancies):
 
 
 def interacion_with_user():
+    """Функция для работы с пользователем, если он выбрал поиск вакансий"""
     global sj_sorted_vacancies, hh_sorted_vacancies, sorted_vacancies, user_filter
     while True:
 
@@ -183,6 +187,7 @@ def interacion_with_user():
 
 
 def user_interaction_with_json():
+    """Функция для работы с пользователем, если он выбрал работу с JSON файлом"""
     while True:
         user_choice = input('Что вы хотите сделать?\n'
                             '1 - Вывести содержимое JSON файла\n'
